@@ -111,6 +111,20 @@ RSpec.describe Terminus::Repositories::Screen, :db do
     end
   end
 
+  describe "#find_or_create" do
+    it "answers existing record" do
+      screen = Factory[:screen, model_id: model.id]
+      record = repository.find_or_create name: screen.name, label: "N/A", model_id: model.id
+
+      expect(record.id).to eq(screen.id)
+    end
+
+    it "answers created record when not found" do
+      record = repository.find_or_create model_id: model.id, name: "create", label: "Create"
+      expect(record).to have_attributes(model_id: model.id, name: "create", label: "Create")
+    end
+  end
+
   describe "#search" do
     let(:screen) { Factory[:screen, label: "Test"] }
 

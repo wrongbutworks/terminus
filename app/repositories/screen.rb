@@ -34,6 +34,13 @@ module Terminus
 
       def find_by(**) = with_associations.where(**).one
 
+      def find_or_create(model_id:, name:, **)
+        screen.dataset
+              .insert_conflict(target: %i[model_id name], conflict_action: :nothing)
+              .insert(model_id:, name:, **)
+        find_by model_id:, name:
+      end
+
       def search key, value
         with_associations.where(Sequel.ilike(key, "%#{value}%"))
                          .order { created_at.asc }
